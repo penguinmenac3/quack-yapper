@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from collections import deque
 
-from PySide6.QtCore import QTimer, Signal, Qt
+import qtawesome as qta
+
+from PySide6.QtCore import QSize, QTimer, Signal, Qt
 from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import (
     QFrame,
@@ -72,8 +74,9 @@ class EditView(QWidget):
     stop_pressed = Signal()
     cancel_enhance_pressed = Signal()
 
-    def __init__(self, parent: QWidget | None = None) -> None:
+    def __init__(self, parent: QWidget | None = None, theme: str = "dark") -> None:
         super().__init__(parent)
+        self._theme = theme
         self._spinner_idx = 0
         self._spinner_timer = QTimer(self)
         self._spinner_timer.setInterval(100)
@@ -83,7 +86,7 @@ class EditView(QWidget):
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(0, 0, 0, 8)
+        root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
         self._text_edit = QPlainTextEdit()
@@ -99,10 +102,10 @@ class EditView(QWidget):
 
         # Bottom bar: [device combo] [vsep] [stacked action area]
         bottom_bar = QWidget()
-        bottom_bar.setFixedHeight(44)
+        bottom_bar.setFixedHeight(34)
         bar_layout = QHBoxLayout(bottom_bar)
-        bar_layout.setContentsMargins(8, 0, 8, 0)
-        bar_layout.setSpacing(6)
+        bar_layout.setContentsMargins(6, 0, 6, 0)
+        bar_layout.setSpacing(4)
 
         self._btn_device = QPushButton("Default mic ▾")
         self._btn_device.setObjectName("deviceBtn")
@@ -129,46 +132,57 @@ class EditView(QWidget):
 
         self._bottom.setCurrentIndex(0)
 
+    def _icon(self, name: str) -> "qta.QIcon":
+        color = "#cdd6f4" if self._theme == "dark" else "#4c4f69"
+        return qta.icon(name, color=color)
+
     def _make_toolbar(self) -> QWidget:
         w = QWidget()
         layout = QHBoxLayout(w)
-        layout.setContentsMargins(4, 4, 4, 4)
-        layout.setSpacing(8)
+        layout.setContentsMargins(2, 2, 2, 2)
+        layout.setSpacing(6)
 
-        self._btn_mic = QPushButton("🎤")
+        self._btn_mic = QPushButton()
+        self._btn_mic.setIcon(self._icon("fa5s.microphone"))
+        self._btn_mic.setIconSize(QSize(14, 14))
         self._btn_mic.setToolTip("Record")
-        self._btn_mic.setFixedSize(36, 36)
+        self._btn_mic.setFixedSize(28, 28)
         self._btn_mic.clicked.connect(self.mic_pressed)
 
-        self._btn_enhance = QPushButton("✨")
+        self._btn_enhance = QPushButton()
+        self._btn_enhance.setIcon(self._icon("fa5s.magic"))
+        self._btn_enhance.setIconSize(QSize(14, 14))
         self._btn_enhance.setToolTip("AI Enhance")
-        self._btn_enhance.setFixedSize(36, 36)
+        self._btn_enhance.setFixedSize(28, 28)
         self._btn_enhance.clicked.connect(self.enhance_pressed)
 
-        self._btn_insert = QPushButton("➜")
+        self._btn_insert = QPushButton()
+        self._btn_insert.setIcon(self._icon("fa5s.arrow-right"))
+        self._btn_insert.setIconSize(QSize(14, 14))
         self._btn_insert.setToolTip("Insert at cursor")
-        self._btn_insert.setFixedSize(36, 36)
+        self._btn_insert.setFixedSize(28, 28)
         self._btn_insert.clicked.connect(self.insert_pressed)
 
         layout.addStretch()
         layout.addWidget(self._btn_mic)
         layout.addWidget(self._btn_enhance)
         layout.addWidget(self._btn_insert)
-        layout.addStretch()
         return w
 
     def _make_waveform_slot(self) -> QWidget:
         w = QWidget()
         layout = QHBoxLayout(w)
-        layout.setContentsMargins(4, 4, 4, 4)
-        layout.setSpacing(6)
+        layout.setContentsMargins(2, 2, 2, 2)
+        layout.setSpacing(4)
 
         self._waveform = WaveformWidget()
         self._waveform.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
-        self._btn_stop = QPushButton("⏹")
+        self._btn_stop = QPushButton()
+        self._btn_stop.setIcon(self._icon("fa5s.stop"))
+        self._btn_stop.setIconSize(QSize(14, 14))
         self._btn_stop.setToolTip("Stop recording")
-        self._btn_stop.setFixedSize(36, 36)
+        self._btn_stop.setFixedSize(28, 28)
         self._btn_stop.clicked.connect(self.stop_pressed)
 
         layout.addWidget(self._waveform)
@@ -178,7 +192,7 @@ class EditView(QWidget):
     def _make_transcribing_slot(self) -> QWidget:
         w = QWidget()
         layout = QHBoxLayout(w)
-        layout.setContentsMargins(8, 4, 8, 4)
+        layout.setContentsMargins(6, 2, 6, 2)
 
         self._transcribing_label = QLabel("⣾  Transcribing…")
         self._transcribing_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -188,15 +202,17 @@ class EditView(QWidget):
     def _make_enhancing_slot(self) -> QWidget:
         w = QWidget()
         layout = QHBoxLayout(w)
-        layout.setContentsMargins(8, 4, 8, 4)
-        layout.setSpacing(8)
+        layout.setContentsMargins(6, 2, 6, 2)
+        layout.setSpacing(6)
 
         self._enhancing_label = QLabel("⣾  Enhancing…")
         layout.addWidget(self._enhancing_label, stretch=1)
 
-        self._btn_cancel_enhance = QPushButton("✕")
+        self._btn_cancel_enhance = QPushButton()
+        self._btn_cancel_enhance.setIcon(self._icon("fa5s.times"))
+        self._btn_cancel_enhance.setIconSize(QSize(12, 12))
         self._btn_cancel_enhance.setToolTip("Cancel")
-        self._btn_cancel_enhance.setFixedSize(28, 28)
+        self._btn_cancel_enhance.setFixedSize(24, 24)
         self._btn_cancel_enhance.clicked.connect(self.cancel_enhance_pressed)
         layout.addWidget(self._btn_cancel_enhance)
         return w

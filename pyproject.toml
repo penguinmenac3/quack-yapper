@@ -12,6 +12,7 @@ dependencies = [
     "mss",
     "pynput",
     "boto3",
+    "qtawesome",
 ]
 
 [project.scripts]

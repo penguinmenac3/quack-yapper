@@ -3,7 +3,9 @@ from __future__ import annotations
 import io
 import logging
 
-from PySide6.QtCore import Qt, QPoint
+import qtawesome as qta
+
+from PySide6.QtCore import Qt, QPoint, QSize
 from PySide6.QtGui import QCursor, QGuiApplication, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
@@ -70,19 +72,22 @@ class OverlayWindow(QWidget):
         card_layout.setSpacing(0)
 
         header = QWidget()
-        header.setFixedHeight(28)
+        header.setFixedHeight(18)
         header_layout = QHBoxLayout(header)
-        header_layout.setContentsMargins(8, 4, 8, 0)
+        header_layout.setContentsMargins(4, 1, 4, 0)
         header_layout.addStretch()
-        close_btn = QPushButton("×")
+        _close_color = "#6c7086" if self._config.ui.theme == "dark" else "#8c8fa1"
+        close_btn = QPushButton()
+        close_btn.setIcon(qta.icon("fa5s.times", color=_close_color))
+        close_btn.setIconSize(QSize(12, 12))
         close_btn.setObjectName("closeBtn")
-        close_btn.setFixedSize(20, 20)
+        close_btn.setFixedSize(18, 18)
         close_btn.setToolTip("Close")
         close_btn.clicked.connect(self._close_and_reset)
         header_layout.addWidget(close_btn)
         card_layout.addWidget(header)
 
-        self._edit_view = EditView(self._card)
+        self._edit_view = EditView(self._card, theme=self._config.ui.theme)
         self._edit_view.mic_pressed.connect(self._on_mic_pressed)
         self._edit_view.mic_select_pressed.connect(self._on_mic_select_pressed)
         self._edit_view.enhance_pressed.connect(self._on_enhance_pressed)
@@ -91,7 +96,7 @@ class OverlayWindow(QWidget):
         self._edit_view.cancel_enhance_pressed.connect(self._on_cancel_enhance)
         card_layout.addWidget(self._edit_view)  # cancel connected once here; not repeated in _on_enhance_pressed
 
-        self.setFixedSize(460, 260)
+        self.setFixedSize(460, 240)
         self._apply_stylesheet()
         self._resolve_initial_device()
 
@@ -410,14 +415,12 @@ def _make_stylesheet(theme: str) -> str:
             font-size: 11px;
             text-align: left;
             padding: 2px 8px;
-            border: 1px solid {border};
-            border-radius: 5px;
+            border: none;
+            background: transparent;
             color: {subtext};
         }}
         QPushButton#deviceBtn:hover {{
-            border-color: {muted};
             color: {text};
-            background-color: {hover};
         }}
     """
 
@@ -553,7 +556,10 @@ class _EnhanceDialog(QDialog):
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(6)
 
-        btn_with = QPushButton("✨ With screenshot")
+        _icon_color = "#cdd6f4" if theme == "dark" else "#4c4f69"
+        btn_with = QPushButton("With screenshot")
+        btn_with.setIcon(qta.icon("fa5s.camera", color=_icon_color))
+        btn_with.setIconSize(QSize(14, 14))
         btn_with.setEnabled(screenshot is not None)
         btn_with.clicked.connect(self._accept_with_screenshot)
 

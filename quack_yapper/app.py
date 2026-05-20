@@ -1,8 +1,10 @@
 import signal
 import sys
 
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QColor, QIcon, QPainter, QPixmap
+import qtawesome as qta
+
+from PySide6.QtCore import QTimer
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 
 from quack_yapper.config import load as load_config
@@ -11,21 +13,7 @@ from quack_yapper.overlay.window import OverlayWindow
 
 
 def _make_tray_icon() -> QIcon:
-    pix = QPixmap(32, 32)
-    pix.fill(Qt.GlobalColor.transparent)
-    painter = QPainter(pix)
-    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    painter.setBrush(QColor("#b4befe"))
-    painter.setPen(Qt.PenStyle.NoPen)
-    painter.drawEllipse(2, 2, 28, 28)
-    painter.setPen(QColor("#1e1e2e"))
-    font = painter.font()
-    font.setBold(True)
-    font.setPixelSize(16)
-    painter.setFont(font)
-    painter.drawText(pix.rect(), Qt.AlignmentFlag.AlignCenter, "🦆")
-    painter.end()
-    return QIcon(pix)
+    return qta.icon("fa5s.headset", color="white", scale_factor=0.9)
 
 
 def main() -> None:
