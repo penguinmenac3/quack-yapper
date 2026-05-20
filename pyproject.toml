@@ -1,0 +1,22 @@
+[project]
+name = "quack-yapper"
+version = "0.1.0"
+description = "Lightweight desktop overlay for system-wide voice dictation with AI-enhanced text insertion."
+requires-python = ">=3.11"
+dependencies = [
+    "PySide6",
+    "sounddevice",
+    "numpy",
+    "faster-whisper",
+    "httpx",
+    "mss",
+    "pynput",
+    "boto3",
+]
+
+[project.scripts]
+quack-yapper = "quack_yapper.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
