@@ -12,10 +12,20 @@ from PySide6.QtCore import QObject, Signal
 
 logger = logging.getLogger(__name__)
 
-_SAMPLE_RATE = 16_000
 _CHANNELS = 1
 _DTYPE = "int16"
 _AMPLITUDE_CEIL = 0.1
+
+
+def _get_sample_rate_for_device(device: int | None) -> int:
+    """Get the device's default sample rate or fall back to 48000 Hz."""
+    if device is None:
+        device = sd.default.device[0]
+    try:
+        device_info = sd.query_devices(device)
+        return int(device_info["default_samplerate"])
+    except Exception:
+        return 48_000
 
 
 _MME_SKIP = {"Microsoft Sound Mapper - Input", "Primary Sound Capture Driver"}
@@ -82,10 +92,12 @@ class AudioRecorder(QObject):
         self._stream: sd.InputStream | None = None
         self._frames: list[np.ndarray] = []
         self._device: int | None = None
+        self._sample_rate: int = 48_000
 
     def start(self, device: int | None = None) -> None:
         self._device = device
         self._frames = []
+        self._sample_rate = _get_sample_rate_for_device(device)
 
         def _callback(indata: np.ndarray, frames: int, time, status) -> None:
             if status:
@@ -98,14 +110,14 @@ class AudioRecorder(QObject):
             self.amplitude_updated.emit(normalized)
 
         self._stream = sd.InputStream(
-            samplerate=_SAMPLE_RATE,
+            samplerate=self._sample_rate,
             channels=_CHANNELS,
             dtype=_DTYPE,
             device=device,
             callback=_callback,
         )
         self._stream.start()
-        logger.info("Recording started (device=%s)", device)
+        logger.info("Recording started (device=%s, sample_rate=%s Hz)", device, self._sample_rate)
 
     def stop(self) -> Path:
         if self._stream is not None:
@@ -120,7 +132,7 @@ class AudioRecorder(QObject):
         with wave.open(tmp.name, "wb") as wf:
             wf.setnchannels(_CHANNELS)
             wf.setsampwidth(2)
-            wf.setframerate(_SAMPLE_RATE)
+            wf.setframerate(self._sample_rate)
             wf.writeframes(pcm.tobytes())
 
         logger.info("Recording saved: %s", tmp.name)
