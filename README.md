@@ -8,7 +8,7 @@ Press a hotkey anywhere on your desktop — dictate — optionally enhance with 
 
 ## Features
 
-- **Local transcription** — runs entirely on-device via [faster-whisper](https://github.com/SYSTRAN/faster-whisper), no cloud required
+- **Local transcription** — runs entirely on-device via [faster-whisper](https://github.com/SYSTRAN/faster-whisper), no cloud required; the Whisper model is downloaded once on first launch and cached in `~/.config/quack-yapper/models/` (fully offline capable)
 - **AI Enhance** — clean up and structure your text with any LLM (Ollama, OpenAI-compatible, or AWS Bedrock)
 - **Screenshot context** — optionally attach a screenshot so the AI can match the tone and context (e.g. replying in a Teams chat)
 - **Insert at cursor** — pastes the result exactly where focus was before the overlay opened
@@ -45,7 +45,7 @@ uv sync
 uv run quack-yapper
 ```
 
-On first run, a default config is written to `~/.config/quack-yapper/config.toml` — open it to adjust the hotkey, theme, LLM provider, Whisper model, and more. The AI Enhance system prompt lives separately in `~/.config/quack-yapper/enhance-prompt.md` and can be edited freely.
+On first run, a default config is written to `~/.config/quack-yapper/config.toml` and the configured Whisper model is downloaded in the background to `~/.config/quack-yapper/models/` — open it to adjust the hotkey, theme, LLM provider, Whisper model, and more. The AI Enhance system prompt lives separately in `~/.config/quack-yapper/enhance-prompt.md` and can be edited freely.
 
 ## Related
 

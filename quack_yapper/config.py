@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 CONFIG_DIR = Path.home() / ".config" / "quack-yapper"
 CONFIG_FILE = CONFIG_DIR / "config.toml"
 PROMPT_FILE = CONFIG_DIR / "enhance-prompt.md"
+MODELS_DIR = CONFIG_DIR / "models"
 
 _DEFAULT_CONFIG_TOML = """\
 [hotkeys]

@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 from quack_yapper.config import load as load_config
 from quack_yapper.hotkey import HotkeyBridge, HotkeyListener
 from quack_yapper.overlay.window import OverlayWindow
+from quack_yapper.transcribe import ModelPreloadWorker
 
 
 def _make_tray_icon() -> QIcon:
@@ -21,6 +22,9 @@ def main() -> None:
     app.setQuitOnLastWindowClosed(False)
 
     config = load_config()
+
+    _preloader = ModelPreloadWorker(config.whisper)
+    _preloader.start()
 
     overlay = OverlayWindow(config)
 
