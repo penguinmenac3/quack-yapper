@@ -1,0 +1,1 @@
+uvw run quack-yapper
