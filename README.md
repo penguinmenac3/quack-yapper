@@ -1,31 +1,56 @@
-# Quack Yapper
+# 🦆 Quack Yapper 🎤
 
 A lightweight desktop overlay for system-wide voice dictation with AI-enhanced text insertion.
 
-Press a hotkey anywhere — dictate — enhance with AI — insert at cursor. Works in any app.
+![Quack Yapper overlay](docs/screenshot.png)
 
----
+Press a hotkey anywhere on your desktop — dictate — optionally enhance with AI — insert at cursor. Works in any application.
 
-## What it does
+## Features
 
-1. Press hotkey → small overlay appears with recording indicator + amplitude visualization
-2. Dictate freely
-3. Press hotkey again or click overlay → transcription runs locally (faster-whisper)
-4. Transcribed text appears in an editable input box
-5. Options:
-   - **Continue** — dictate more, appends to the box
-   - **Edit** — type directly in the box
-   - **AI Enhance** — LLM structures and cleans your text
-   - **Insert** — copies to clipboard, closes overlay, pastes at original cursor position
+- **Local transcription** — runs entirely on-device via [faster-whisper](https://github.com/SYSTRAN/faster-whisper), no cloud required
+- **AI Enhance** — clean up and structure your text with any LLM (Ollama, OpenAI-compatible, or AWS Bedrock)
+- **Screenshot context** — optionally attach a screenshot so the AI can match the tone and context (e.g. replying in a Teams chat)
+- **Insert at cursor** — pastes the result exactly where focus was before the overlay opened
 
-## AI Enhance + Screenshot Context
+## Workflow
 
-When Yapper opens, a screenshot is silently captured. By default it is **not** sent to the AI. Enable the *"Include screenshot as context"* checkbox to let the AI use it for tone/context matching (e.g. replying in a Teams chat).
+1. Press `Ctrl+Shift+Z` (or your configured hotkey) from any application — the overlay opens and recording starts immediately.
+2. Speak freely.
+3. Press the stop button (or the hotkey again) to stop — the transcript appears in the text box.
+4. Optionally edit the text or hit **AI Enhance** to clean it up. A screenshot is silently captured on open and can be included as context for the AI.
+5. Press **Insert** to paste the text at your original cursor position.
 
-## Status
+## Keyboard & UI reference
 
-🌱 Early planning — see `docs/TODOs.md`
+| Control | Action |
+| --- | --- |
+| `Ctrl+Shift+Z` (default) | Toggle recording / summon overlay |
+| 🎤 button | Start / stop recording |
+| ✨ button | Open AI Enhance dialog |
+| ➜ button | Insert text at original cursor position |
+| Device label `▾` | Open microphone picker |
+| `×` (top-right) | Close and discard |
+| Tray left-click | Show / hide overlay |
+| Tray right-click → Exit | Quit |
+
+## Installation
+
+**Requirements:** Python ≥ 3.11, [uv](https://docs.astral.sh/uv/)
+
+```bash
+git clone https://github.com/Quack-Norris/quack-yapper
+cd quack-yapper
+uv sync
+uv run quack-yapper
+```
+
+On first run, a default config is written to `~/.config/quack-yapper/config.toml` — open it to adjust the hotkey, theme, LLM provider, Whisper model, and more. The AI Enhance system prompt lives separately in `~/.config/quack-yapper/enhance-prompt.md` and can be edited freely.
 
 ## Related
 
-- [Quack Norris](https://github.com/...) — AI coding assistant. Quack Yapper pairs well with it for voice-heavy workflows.
+- [Quack Norris](https://github.com/penguinmenac3/quack-norris) — AI coding assistant; pairs well with Quack Yapper for voice-heavy development workflows.
+
+## License
+
+This codebase is licensed under MIT license.
